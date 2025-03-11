@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
 class ProgressBar extends StatelessWidget {
-  final double progress; // valor entre 0.0 e 1.0
+  final double progress;
 
-  const ProgressBar({Key? key, required this.progress}) : super(key: key);
+  const ProgressBar({
+    super.key,
+    required this.progress,
+  });
 
   @override
   Widget build(BuildContext context) {

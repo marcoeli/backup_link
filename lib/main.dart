@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:provider/provider.dart';
+
 import 'providers/backup_provider.dart';
 import 'screens/backup_screen.dart';
 
@@ -19,7 +21,9 @@ class BackupApp extends StatelessWidget {
           primarySwatch: Colors.blue,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        home: const BackupScreen(),
+        home: ProgressHUD(
+          child: const BackupScreen(),
+        ),
       ),
     );
   }
