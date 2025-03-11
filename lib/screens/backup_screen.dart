@@ -251,7 +251,7 @@ class ResponsiveOperationsWidget extends StatelessWidget {
         },
       ),
       OperationButton(
-        label: 'Apagar Pasta de Origem',
+        label: 'Apagar a Pasta de Origem',
         icon: Icons.delete_forever,
         onPressed: () async {
           bool? confirm = await showConfirmationDialog(
@@ -262,13 +262,13 @@ class ResponsiveOperationsWidget extends StatelessWidget {
         },
       ),
       OperationButton(
-        label: 'Criar Link Simbólico',
-        icon: Icons.link,
+        label: 'Apagar e Criar Link',
+        icon: Icons.link_off,
         onPressed: () async {
-          bool? confirm = await showConfirmationDialog(
-              context, 'Deseja criar um link simbólico?');
+          bool? confirm = await showConfirmationDialog(context,
+              'Deseja apagar a pasta de origem e criar um link simbólico?');
           if (confirm == true) {
-            backupProvider.createSymbolicLink();
+            backupProvider.deleteSourceFolderAndCreateLink();
           }
         },
       ),

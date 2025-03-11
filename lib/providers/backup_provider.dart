@@ -318,7 +318,7 @@ class BackupProvider extends ChangeNotifier {
     }
   }
 
-  /// Deleta a pasta de origem após confirmação de backup
+  /// Deletes the source folder after confirming that backup was created
   Future<void> deleteSourceFolder() async {
     if (_sourceFolders.isEmpty) {
       setFeedbackMessage("Nenhuma pasta de origem selecionada para excluir.");
@@ -339,6 +339,40 @@ class BackupProvider extends ChangeNotifier {
     } finally {
       _hideProgress();
       _updateUI();
+    }
+  }
+
+  Future<bool> deleteSourceFolderAndCreateLink() async {
+    if (_sourceFolders.isEmpty || _destinationFolder == null) {
+      setFeedbackMessage(
+          "Defina pastas de origem e destino antes de apagar e criar links simbólicos.");
+      return false;
+    }
+
+    try {
+      _showProgress("Apagando pasta de origem e criando link simbólico...");
+
+      for (String folderPath in _sourceFolders) {
+        // Apagar a pasta de origem
+        await _backupModel.deleteSourceFolder(folderPath);
+
+        // Criar o link simbólico
+        String linkName = path.basename(folderPath);
+        String targetPath = path.join(_destinationFolder!, linkName);
+        await _backupModel.createSymbolicLink(targetPath, folderPath);
+        _updateFeedback();
+      }
+
+      _updateProgress(1.0, "Pasta apagada e link simbólico criado!");
+      await Future.delayed(_completionDelay);
+
+      return true;
+    } catch (e) {
+      _logger.e("Erro ao apagar pasta e criar link simbólico: $e");
+      setFeedbackMessage("Erro ao apagar pasta e criar link simbólico: $e");
+      return false;
+    } finally {
+      _hideProgress();
     }
   }
 }
