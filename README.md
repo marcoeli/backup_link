@@ -31,7 +31,7 @@ Além disso, o uso de links simbólicos permite que as pastas de configuração 
 1. Clone o repositório para sua máquina local:
 
     ```sh
-    git clone https://github.com/seu-usuario/backup_link.git
+    git clone https://github.com/marcoeli/backup_link.git
     ```
 
 2. Navegue até o diretório do projeto:
@@ -103,7 +103,7 @@ Additionally, using symbolic links allows configuration folders to be stored in 
 1. Clone the repository to your local machine:
 
     ```sh
-    git clone https://github.com/seu-usuario/backup_link.git
+    git clone https://github.com/marcoeli/backup_link.git
     ```
 
 2. Navigate to the project directory:
