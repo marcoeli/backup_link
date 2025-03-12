@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/backup_provider.dart';
+import '../utils/localization.dart';
 import '../widgets/progress_hud.dart';
 
 class BackupScreen extends StatefulWidget {
@@ -30,21 +31,22 @@ class _BackupScreenState extends State<BackupScreen> {
   Future<bool?> showConfirmationDialog(
       BuildContext context, String message) async {
     final navigator = Navigator.of(context);
+    final localizations = AppLocalizations.of(context);
     // Guardar o contexto para uso posterior
     return showDialog<bool>(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('Confirmação'),
+          title: Text(localizations.translate('confirmation')),
           content: Text(message),
           actions: [
             TextButton(
               onPressed: () => navigator.pop(false),
-              child: const Text('Cancelar'),
+              child: Text(localizations.translate('cancel')),
             ),
             TextButton(
               onPressed: () => navigator.pop(true),
-              child: const Text('Confirmar'),
+              child: Text(localizations.translate('confirm')),
             ),
           ],
         );
@@ -54,10 +56,11 @@ class _BackupScreenState extends State<BackupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     return ProgressHUD(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Backup Link'),
+          title: Text(localizations.translate('app_title')),
         ),
         body: LayoutBuilder(
           builder: (context, constraints) {
@@ -207,29 +210,31 @@ class ResponsiveOperationsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     // Obter o BackupProvider
     final backupProvider = Provider.of<BackupProvider>(context);
 
     // Lista de operações disponíveis
     final List<OperationButton> operations = [
       OperationButton(
-        label: 'Iniciar Backup',
+        label: localizations.translate('start_backup'),
         icon: Icons.backup,
         onPressed: () async {
           final navigator = Navigator.of(context);
-          bool? confirm =
-              await showConfirmationDialog(context, 'Deseja iniciar o backup?');
+          bool? confirm = await showConfirmationDialog(
+              context, localizations.translate('start_backup'));
           if (confirm == true) {
             backupProvider.backupFolders(context, (error) async {
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: const Text('Erro'),
-                  content: Text('Ocorreu um erro durante o backup: $error'),
+                  title: Text(localizations.translate('error')),
+                  content: Text(
+                      '${localizations.translate('error_during_backup')}: $error'),
                   actions: [
                     TextButton(
                       onPressed: () => navigator.pop(),
-                      child: const Text('Fechar'),
+                      child: Text(localizations.translate('close')),
                     ),
                   ],
                 ),
@@ -240,33 +245,33 @@ class ResponsiveOperationsWidget extends StatelessWidget {
         },
       ),
       OperationButton(
-        label: 'Verificar Integridade',
+        label: localizations.translate('check_integrity'),
         icon: Icons.verified,
         onPressed: () async {
           bool? confirm = await showConfirmationDialog(
-              context, 'Deseja verificar a integridade do backup?');
+              context, localizations.translate('check_integrity'));
           if (confirm == true) {
             backupProvider.checkIntegrity();
           }
         },
       ),
       OperationButton(
-        label: 'Apagar a Pasta de Origem',
+        label: localizations.translate('delete_source_folder'),
         icon: Icons.delete_forever,
         onPressed: () async {
           bool? confirm = await showConfirmationDialog(
-              context, 'Deseja apagar a pasta de origem?');
+              context, localizations.translate('delete_source_folder'));
           if (confirm == true) {
             backupProvider.deleteSourceFolder();
           }
         },
       ),
       OperationButton(
-        label: 'Apagar e Criar Link',
+        label: localizations.translate('delete_and_create_link'),
         icon: Icons.link_off,
         onPressed: () async {
-          bool? confirm = await showConfirmationDialog(context,
-              'Deseja apagar a pasta de origem e criar um link simbólico?');
+          bool? confirm = await showConfirmationDialog(
+              context, localizations.translate('delete_and_create_link'));
           if (confirm == true) {
             backupProvider.deleteSourceFolderAndCreateLink();
           }

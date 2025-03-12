@@ -1,0 +1,17 @@
+{
+    "app_title": "Backup Link",
+    "confirmation": "Confirmação",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "start_backup": "Iniciar Backup",
+    "check_integrity": "Verificar Integridade",
+    "delete_source_folder": "Apagar Pasta de Origem",
+    "create_symbolic_link": "Criar Link Simbólico",
+    "delete_and_create_link": "Apagar e Criar Link",
+    "select_source_folder": "Selecionar Pasta de Origem",
+    "select_destination_folder": "Selecionar Pasta de Destino",
+    "no_source_folder_selected": "Nenhuma pasta de origem selecionada",
+    "no_destination_folder_selected": "Nenhuma pasta de destino selecionada",
+    "status": "Status",
+    "no_operation_performed": "Nenhuma operação realizada ainda."
+}

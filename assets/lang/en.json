@@ -1,0 +1,17 @@
+{
+    "app_title": "Backup Link",
+    "confirmation": "Confirmation",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "start_backup": "Start Backup",
+    "check_integrity": "Check Integrity",
+    "delete_source_folder": "Delete Source Folder",
+    "create_symbolic_link": "Create Symbolic Link",
+    "delete_and_create_link": "Delete and Create Link",
+    "select_source_folder": "Select Source Folder",
+    "select_destination_folder": "Select Destination Folder",
+    "no_source_folder_selected": "No source folder selected",
+    "no_destination_folder_selected": "No destination folder selected",
+    "status": "Status",
+    "no_operation_performed": "No operation performed yet."
+}

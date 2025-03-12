@@ -1,0 +1,17 @@
+{
+    "app_title": "Backup Link",
+    "confirmation": "Confirmación",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "start_backup": "Iniciar Respaldo",
+    "check_integrity": "Verificar Integridad",
+    "delete_source_folder": "Eliminar Carpeta de Origen",
+    "create_symbolic_link": "Crear Enlace Simbólico",
+    "delete_and_create_link": "Eliminar y Crear Enlace",
+    "select_source_folder": "Seleccionar Carpeta de Origen",
+    "select_destination_folder": "Seleccionar Carpeta de Destino",
+    "no_source_folder_selected": "No se ha seleccionado ninguna carpeta de origen",
+    "no_destination_folder_selected": "No se ha seleccionado ninguna carpeta de destino",
+    "status": "Estado",
+    "no_operation_performed": "No se ha realizado ninguna operación todavía."
+}
