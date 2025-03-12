@@ -46,7 +46,7 @@ Além disso, o uso de links simbólicos permite que as pastas de configuração 
     flutter build windows
     ```
 
-4. O executável compilado se encontrará na pasta `build/windows/runner/release`.
+4. O executável compilado se encontrará na pasta `build\windows\x64\runner\Release`.
 
 ## Utilização
 
@@ -60,7 +60,7 @@ Contribuições são sempre bem-vindas! Se você tiver ideias de melhorias, corr
 
 ## Licença
 
-Este projeto é licenciado sob a licença MIT. Consulte o arquivo `LICENSE` para obter mais detalhes.
+Este projeto é licenciado sob a licença MIT. Consulte o arquivo [`LICENSE`](./LICENSE) para obter mais detalhes.
 
 ## Recursos Adicionais
 
@@ -118,7 +118,7 @@ Additionally, using symbolic links allows configuration folders to be stored in 
     flutter build windows
     ```
 
-4. The compiled executable will be located in the `build/windows/runner/release` folder.
+4. The compiled executable will be located in the `build\windows\x64\runner\Release` folder.
 
 ## Usage
 
