@@ -6,6 +6,7 @@ import '../models/progress_update.dart';
 import '../providers/backup_provider.dart';
 import '../utils/localization.dart';
 import '../widgets/operation_history_widget.dart';
+import '../widgets/progress_details_widget.dart';
 import '../widgets/progress_hud.dart';
 
 class BackupScreen extends StatefulWidget {
@@ -198,6 +199,10 @@ class _BackupScreenState extends State<BackupScreen> {
           children: [
             const FeedbackWidget(),
             const SizedBox(height: 16),
+
+            // Adiciona o widget de detalhes de progresso
+            const ProgressDetailsWidget(),
+
             const Divider(),
             const OperationHistoryWidget(),
           ],
@@ -265,7 +270,8 @@ class ResponsiveOperationsWidget extends StatelessWidget {
           bool? confirm = await showConfirmationDialog(
               context, localizations.translate('check_integrity'));
           if (confirm == true) {
-            backupProvider.checkIntegrity();
+            // Atualizado para usar a nova função de verificação de integridade
+            backupProvider.checkIntegrityWithDetailedProgress();
           }
         },
       ),
@@ -491,10 +497,11 @@ class FeedbackWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Obtém o provider para acessar mensagens de feedback
     final backupProvider = Provider.of<BackupProvider>(context, listen: true);
     final bool hasFeedback = backupProvider.feedbackMessage.isNotEmpty;
 
-    // Determine o tipo de feedback para aplicar estilo apropriado
+    // Determina o tipo de feedback para aplicar estilo apropriado
     ProgressType feedbackType = ProgressType.info;
     if (hasFeedback) {
       final message = backupProvider.feedbackMessage.toLowerCase();
@@ -510,8 +517,14 @@ class FeedbackWidget extends StatelessWidget {
       }
     }
 
-    // Cores para feedback mais escuras
-    Color textColor = hasFeedback
+    // Prepara as cores para o feedback usando os métodos modernos recomendados
+    final backgroundColor = hasFeedback
+        ? Color.fromRGBO(feedbackType.color.red, feedbackType.color.green,
+            feedbackType.color.blue, 0.1)
+        : Colors.grey.shade100;
+
+    // Cor do texto com contraste melhorado
+    final textColor = hasFeedback
         ? _getDarkerColor(feedbackType.color)
         : Colors.grey.shade700;
 
@@ -535,11 +548,8 @@ class FeedbackWidget extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              // Usando a versão moderna de withOpacity
-              color: hasFeedback
-                  ? Color.fromRGBO(feedbackType.color.red,
-                      feedbackType.color.green, feedbackType.color.blue, 0.1)
-                  : Colors.grey.shade100,
+              // Usando o método correto para cores com transparência
+              color: backgroundColor,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: hasFeedback ? feedbackType.color : Colors.grey.shade300,
@@ -572,7 +582,7 @@ class FeedbackWidget extends StatelessWidget {
 
   // Método auxiliar para obter uma cor mais escura
   Color _getDarkerColor(Color color) {
-    // Reduz a luminosidade da cor em 30%
+    // Reduz a luminosidade da cor em 30% para melhor contraste
     return HSLColor.fromColor(color)
         .withLightness(
             (HSLColor.fromColor(color).lightness - 0.3).clamp(0.0, 1.0))

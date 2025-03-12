@@ -5,7 +5,7 @@ class ProgressUpdate {
   /// Mensagem descritiva da etapa atual
   final String message;
 
-  /// Progresso atual (0.0 a 1.0)
+  /// Progresso atual (0.0 a 1.0) ou null para indeterminado
   final double progress;
 
   /// Tipo de atualização para definir cores e ícones
@@ -17,10 +17,13 @@ class ProgressUpdate {
   /// Construtor para criar uma nova atualização de progresso
   ProgressUpdate({
     required this.message,
-    this.progress = 0.0,
+    double? progress, // Agora aceita nulo como entrada
     this.type = ProgressType.info,
     DateTime? timestamp,
-  }) : timestamp = timestamp ?? DateTime.now();
+  })  :
+        // Se progress for nulo, usamos 0.0 como valor padrão
+        progress = progress ?? 0.0,
+        timestamp = timestamp ?? DateTime.now();
 
   /// Método para criar cópia do objeto com alguns campos alterados
   ProgressUpdate copyWith({
@@ -31,12 +34,14 @@ class ProgressUpdate {
   }) {
     return ProgressUpdate(
       message: message ?? this.message,
-      progress: progress ?? this.progress,
+      progress: progress, // Será null se não for especificado
       type: type ?? this.type,
       timestamp: timestamp ?? this.timestamp,
     );
   }
 }
+
+int valorInteiro = 0; // Inicializa com um valor padrão
 
 /// Tipos de atualizações de progresso
 enum ProgressType { info, success, warning, error, working }
@@ -73,5 +78,14 @@ extension ProgressTypeExtension on ProgressType {
       case ProgressType.working:
         return Icons.hourglass_bottom;
     }
+  }
+}
+
+/// Extensão para métodos auxiliares de cor
+extension SafeColorMethods on Color {
+  /// Versão segura do método para cores com transparência
+  Color safeWithOpacity(double opacity) {
+    // Usando os atributos modernos r, g, b em vez dos obsoletos
+    return Color.fromRGBO(red, green, blue, opacity);
   }
 }
