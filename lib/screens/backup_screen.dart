@@ -2,8 +2,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../models/progress_update.dart';
 import '../providers/backup_provider.dart';
 import '../utils/localization.dart';
+import '../widgets/operation_history_widget.dart';
 import '../widgets/progress_hud.dart';
 
 class BackupScreen extends StatefulWidget {
@@ -188,13 +190,16 @@ class _BackupScreenState extends State<BackupScreen> {
   }
 
   Widget _buildFeedbackCard() {
-    return const Card(
+    return Card(
       child: Padding(
-        padding: EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(12.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            FeedbackWidget(),
+            const FeedbackWidget(),
+            const SizedBox(height: 16),
+            const Divider(),
+            const OperationHistoryWidget(),
           ],
         ),
       ),
@@ -220,14 +225,23 @@ class ResponsiveOperationsWidget extends StatelessWidget {
         label: localizations.translate('start_backup'),
         icon: Icons.backup,
         onPressed: () async {
-          final navigator = Navigator.of(context);
+          // Salvar contexto antes de operações assíncronas
+          final BuildContext currentContext = context;
+          final navigator = Navigator.of(currentContext);
+
           bool? confirm = await showConfirmationDialog(
-              context, localizations.translate('start_backup'));
+              currentContext, localizations.translate('start_backup'));
+
+          // Verificar se o widget ainda está montado após operação assíncrona
+          if (!currentContext.mounted) return;
+
           if (confirm == true) {
-            backupProvider.backupFolders(context, (error) async {
+            backupProvider.backupFolders(currentContext, (error) async {
+              if (!currentContext.mounted) return false;
+
               showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
+                context: currentContext,
+                builder: (dialogContext) => AlertDialog(
                   title: Text(localizations.translate('error')),
                   content: Text(
                       '${localizations.translate('error_during_backup')}: $error'),
@@ -477,9 +491,29 @@ class FeedbackWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Obtenha o BackupProvider para acessar as mensagens de feedback
     final backupProvider = Provider.of<BackupProvider>(context, listen: true);
     final bool hasFeedback = backupProvider.feedbackMessage.isNotEmpty;
+
+    // Determine o tipo de feedback para aplicar estilo apropriado
+    ProgressType feedbackType = ProgressType.info;
+    if (hasFeedback) {
+      final message = backupProvider.feedbackMessage.toLowerCase();
+      if (message.contains('erro') || message.contains('falha')) {
+        feedbackType = ProgressType.error;
+      } else if (message.contains('sucesso') || message.contains('concluído')) {
+        feedbackType = ProgressType.success;
+      } else if (message.contains('aviso') || message.contains('alerta')) {
+        feedbackType = ProgressType.warning;
+      } else if (message.contains('processando') ||
+          message.contains('iniciando')) {
+        feedbackType = ProgressType.working;
+      }
+    }
+
+    // Cores para feedback mais escuras
+    Color textColor = hasFeedback
+        ? _getDarkerColor(feedbackType.color)
+        : Colors.grey.shade700;
 
     return Container(
       width: double.infinity,
@@ -501,24 +535,47 @@ class FeedbackWidget extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: hasFeedback ? Colors.blue.shade50 : Colors.grey.shade100,
+              // Usando a versão moderna de withOpacity
+              color: hasFeedback
+                  ? Color.fromRGBO(feedbackType.color.red,
+                      feedbackType.color.green, feedbackType.color.blue, 0.1)
+                  : Colors.grey.shade100,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color:
-                    hasFeedback ? Colors.blue.shade200 : Colors.grey.shade300,
+                color: hasFeedback ? feedbackType.color : Colors.grey.shade300,
               ),
             ),
-            child: Text(
-              hasFeedback
-                  ? backupProvider.feedbackMessage
-                  : 'Nenhuma operação realizada ainda.',
-              style: TextStyle(
-                fontStyle: hasFeedback ? FontStyle.normal : FontStyle.italic,
-              ),
+            child: Row(
+              children: [
+                if (hasFeedback)
+                  Icon(feedbackType.icon, color: feedbackType.color),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    hasFeedback
+                        ? backupProvider.feedbackMessage
+                        : 'Nenhuma operação realizada ainda.',
+                    style: TextStyle(
+                      fontWeight:
+                          hasFeedback ? FontWeight.bold : FontWeight.normal,
+                      color: textColor,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
       ),
     );
+  }
+
+  // Método auxiliar para obter uma cor mais escura
+  Color _getDarkerColor(Color color) {
+    // Reduz a luminosidade da cor em 30%
+    return HSLColor.fromColor(color)
+        .withLightness(
+            (HSLColor.fromColor(color).lightness - 0.3).clamp(0.0, 1.0))
+        .toColor();
   }
 }

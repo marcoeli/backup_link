@@ -20,6 +20,7 @@ dependencies:
   logger: ^2.5.0
   path: ^1.9.1
   win32: ^5.12.0
+  crypto: ^3.0.3 # Adicionado pacote crypto
 
 dev_dependencies:
   flutter_test:

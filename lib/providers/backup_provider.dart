@@ -3,6 +3,7 @@ import 'package:logger/logger.dart';
 import 'package:path/path.dart' as path;
 
 import '../models/backup_model.dart';
+import '../models/progress_update.dart';
 import '../widgets/progress_hud.dart';
 
 /// A ChangeNotifier that manages the state and UI updates for backup operations.
@@ -36,10 +37,89 @@ class BackupProvider extends ChangeNotifier {
   String get feedbackMessage => _feedbackMessage;
   List<String> get logMessages => _logMessages;
 
+  final List<ProgressUpdate> _localHistory = [];
+  final int _maxHistoryItems = 100; // Limite de itens no histórico
+
   /// Sets up the ProgressHUD widget for showing operation progress
   void setProgressHUD(ProgressHUDState? progressHUD) {
     _progressHUD = progressHUD;
     _logger.i("ProgressHUD configured: ${progressHUD != null}");
+  }
+
+  // Método para registrar progresso
+  void _reportProgress({
+    required String message,
+    double progress = 0.0,
+    ProgressType type = ProgressType.working,
+    bool showHUD = true,
+  }) {
+    // Adiciona ao histórico local
+    final update =
+        ProgressUpdate(message: message, progress: progress, type: type);
+    _localHistory.add(update);
+
+    // Mantém o histórico dentro do limite
+    if (_localHistory.length > _maxHistoryItems) {
+      _localHistory.removeAt(0);
+    }
+
+    // Atualiza mensagem de feedback
+    _feedbackMessage = message;
+
+    // Atualiza o ProgressHUD se disponível
+    if (_progressHUD != null && showHUD) {
+      if (_progressHUD!.isLoading) {
+        _progressHUD!.updateProgress(
+          message: message,
+          progress: progress,
+          type: type,
+        );
+      } else if (showHUD) {
+        _progressHUD!.show(
+          message: message,
+          progress: progress,
+          type: type,
+        );
+      }
+    }
+
+    notifyListeners();
+  }
+
+  // Método para finalizar operação
+  void _completeOperation({
+    required String message,
+    required bool success,
+    bool hideHUD = true,
+  }) {
+    final type = success ? ProgressType.success : ProgressType.error;
+
+    // Registra a conclusão
+    _reportProgress(
+      message: message,
+      progress: 1.0,
+      type: type,
+      showHUD: false,
+    );
+
+    // Oculta o HUD se solicitado
+    if (_progressHUD != null && hideHUD) {
+      _progressHUD!.hide(completionMessage: message, type: type);
+    }
+
+    notifyListeners();
+  }
+
+  // Obtém o histórico local
+  List<ProgressUpdate> get operationHistory => List.unmodifiable(_localHistory);
+
+  // Expõe o ProgressHUD para widgets que precisam acessá-lo (como o widget de histórico)
+  ProgressHUDState? get progressHUD => _progressHUD;
+
+  /// Clears the operation history
+  void clearOperationHistory() {
+    _localHistory.clear();
+    notifyListeners();
   }
 
   /// Adds a source folder to the backup list
